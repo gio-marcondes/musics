@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Catálogo Oficial - DJ Mike</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --card-inner: #0b1120;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --border-color: #334155;
+      --gold: #fbbf24;
+      --heart: #f43f5e;
+      --success: #22c55e;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 2rem;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1440px;
+    }
+
+    .header {
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .controls-wrapper {
+      display: flex;
+      gap: 0.8rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      outline: none;
+      width: 260px;
+      transition: all 0.2s ease;
+    }
+
+    .search-box:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    }
+
+    .fav-filter-btn {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .fav-filter-btn:hover {
+      border-color: var(--heart);
+      color: var(--heart);
+    }
+
+    .fav-filter-btn.active {
+      background: rgba(244, 63, 94, 0.15);
+      border-color: var(--heart);
+      color: var(--heart);
+    }
+
+    .table-wrapper {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    thead {
+      background-color: #0b1120;
+      user-select: none;
+    }
+
+    th {
+      padding: 1rem 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.2s ease;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th:hover {
+      color: var(--accent);
+    }
+
+    th.sorted-asc::after {
+      content: ' ▲';
+      color: var(--accent);
+      font-size: 0.75rem;
+    }
+
+    th.sorted-desc::after {
+      content: ' ▼';
+      color: var(--accent);
+      font-size: 0.75rem;
+    }
+
+    tbody tr.track-row {
+      border-bottom: 1px solid var(--border-color);
+      transition: background-color 0.2s ease;
+      cursor: pointer;
+    }
+
+    tbody tr.track-row:hover {
+      background-color: rgba(56, 189, 248, 0.08);
+    }
+
+    tbody tr.track-row.is-playing {
+      background-color: rgba(56, 189, 248, 0.15);
+    }
+
+    tbody tr.track-row.is-expanded {
+      background-color: rgba(56, 189, 248, 0.1);
+      border-bottom: none;
+    }
+
+    td {
+      padding: 0.85rem 0.8rem;
+      vertical-align: middle;
+    }
+
+    .rank-col {
+      font-weight: 700;
+      color: var(--accent);
+      text-align: center;
+      font-size: 0.95rem;
+      width: 45px;
+    }
+
+    .rank-col.top-3 {
+      color: var(--gold);
+    }
+
+    .track-title {
+      font-weight: 600;
+      color: var(--accent);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .expand-indicator {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      transition: transform 0.25s ease;
+    }
+
+    tr.track-row.is-expanded .expand-indicator {
+      transform: rotate(180deg);
+      color: var(--accent);
+    }
+
+    .score-badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .score-badge.top-1 {
+      background: rgba(251, 191, 36, 0.15);
+      color: var(--gold);
+      border-color: rgba(251, 191, 36, 0.4);
+    }
+
+    .artist-reference {
+      font-size: 0.82rem;
+      color: #e2e8f0;
+      white-space: nowrap;
+    }
+
+    .artist-tag {
+      display: inline-block;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      font-size: 0.76rem;
+      background: rgba(129, 140, 248, 0.15);
+      color: #a5b4fc;
+      border: 1px solid rgba(129, 140, 248, 0.3);
+    }
+
+    .quote-text {
+      font-style: italic;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .badge-status {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: rgba(148, 163, 184, 0.1);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+
+    .play-btn {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: var(--accent);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.2s ease;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .play-btn:hover {
+      background: var(--accent);
+      color: #0f172a;
+    }
+
+    .play-btn.playing {
+      background: rgba(34, 197, 94, 0.2);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    .heart-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: #475569;
+      cursor: pointer;
+      transition: transform 0.15s ease, color 0.2s ease;
+      outline: none;
+      padding: 0.2rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    .heart-btn:hover {
+      transform: scale(1.2);
+      color: var(--heart);
+    }
+
+    .heart-btn.is-fav {
+      color: var(--heart);
+      filter: drop-shadow(0 0 6px rgba(244, 63, 94, 0.4));
+    }
+
+    tr.accordion-row {
+      display: none;
+      background-color: #0d1527;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    tr.accordion-row.open {
+      display: table-row;
+    }
+
+    .accordion-content {
+      padding: 1.3rem 1.6rem;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.9rem;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 1100px) {
+      .accordion-content {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 680px) {
+      .accordion-content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .detail-box {
+      background: var(--card-inner);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 0.85rem;
+    }
+
+    .detail-box.lyrics-box {
+      grid-column: 1 / -1;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      background: #090e1a;
+    }
+
+    .lyrics-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .lyrics-textarea {
+      width: 100%;
+      min-height: 180px;
+      background: #0d1527;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-main);
+      padding: 0.75rem;
+      font-family: inherit;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      resize: vertical;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .lyrics-textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .save-lyrics-btn {
+      background: rgba(56, 189, 248, 0.2);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: var(--accent);
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .save-lyrics-btn:hover {
+      background: var(--accent);
+      color: #0f172a;
+    }
+
+    .save-lyrics-btn.saved {
+      background: rgba(34, 197, 94, 0.2);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    .detail-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .detail-value {
+      font-size: 0.85rem;
+      color: var(--text-main);
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div>
+      <h1>Catálogo Oficial — DJ Mike</h1>
+      <p style="margin: 0.3rem 0 0; color: var(--text-muted); font-size: 0.9rem;">
+        Catálogo ranqueado (#1 ao topo). Clique na música para ver ficha técnica e <strong>editar/salvar as letras</strong> diretamente.
+      </p>
+    </div>
+    <div class="controls-wrapper">
+      <button id="toggleFavFilter" class="fav-filter-btn">❤️ Ver Apenas Favoritas</button>
+      <input type="text" id="searchInput" class="search-box" placeholder="Buscar música, artista, estilo...">
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table id="musicTable">
+      <thead>
+        <tr>
+          <th data-type="number" class="sorted-asc" style="text-align: center; width: 45px;">Rank</th>
+          <th data-type="fav" title="Ordenar por favoritas" style="text-align: center; width: 40px;">❤️</th>
+          <th style="cursor: default; width: 80px;">Tocar</th>
+          <th data-type="string">Faixa</th>
+          <th data-type="number">Nota</th>
+          <th data-type="string">Artista Parecido</th>
+          <th data-type="string">Mensagem Central</th>
+          <th data-type="string">Melhor Frase</th>
+          <th data-type="string">Aplicação Ideal</th>
+          <th data-type="string">Chance de Sucesso</th>
+        </tr>
+      </thead>
+      <tbody id="catalogTbody">
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  const TRACKS_DATA = [
+    {
+      id: "ainda-penso-em-voce",
+      title: "ainda-penso-em-você [usesuno.com]",
+      score: "9.8",
+      artistRef: "Bryan Adams / Roupa Nova",
+      theme: "Nostalgia, lembrança persistente e conflito emocional",
+      quote: `"Ainda penso em você quando tudo fica em silêncio"`,
+      ideal: "Balada Romântica / Rádio FM",
+      status: "Muito Alta (Hit Emocional)",
+      curiosidades: "Faixa melancólica e marcante com arranjo envolvente e refrão profundo.",
+      pontosFortes: "Melodia cativante e forte carga emocional.",
+      mixagem: "Vocais limpos, ambiência espaçosa e instrumentação acústica equilibrada.",
+      instrumentos: "Violão, piano, baixo e bateria suave.",
+      potenciaVocal: "Interpretação sentida e expressiva.",
+      sentimento: "Saudade, reflexão e amor persistente.",
+      publico: "Apreciadores de baladas românticas e pop confessional.",
+      potencial: "Rádios FM e playlists de reflexão.",
+      lyrics: `Eu tentei deixar pra trás tudo aquilo entre nós...
+Mas quando a noite chega eu ainda ouço sua voz...`
+    },
+    {
+      id: "tive-um-dia-dificil",
+      title: "tive-um-dia-dificil-boaa [usesuno.com]",
+      score: "9.75",
+      artistRef: "Djavan / Cazuza",
+      theme: "Superação diária, cansaço e resiliência",
+      quote: `"Hoje foi difícil, mas eu não desisti"`,
+      ideal: "MPB Confessional / Acolhimento",
+      status: "Alta (Pop/MPB Íntimo)",
+      curiosidades: "Pop/MPB acolhedor de superação diária, com arranjo intimista e catártico.",
+      pontosFortes: "Letra honesta e identificação imediata.",
+      mixagem: "Foco total na voz e no violão com pads acolhedores.",
+      instrumentos: "Violão de nylon, piano elétrico e percussão leve.",
+      potenciaVocal: "Interpretação sincera, madura e próxima do ouvinte.",
+      sentimento: "Resiliência, cansaço superado e esperança.",
+      publico: "Ouvintes em busca de conforto e verdade na música.",
+      potencial: "Playlists reflexivas e rádios MPB.",
+      lyrics: `Hoje foi difícil encarar o espelho...`
+    },
+    {
+      id: "e-tarde-pra-outra-vez",
+      title: "é-tarde-pra-outra-vez-topp [usesuno.com]",
+      score: "9.88",
+      artistRef: "Roupa Nova / Bryan Adams",
+      theme: "Nostalgia, oportunidades perdidas e lamento amoroso",
+      quote: `"É tarde outra vez / tivemos tempo pra ser meu"`,
+      ideal: "Balada Romântica / Rádio FM",
+      status: "Altíssima (Hit Emocional / Top Ranking)",
+      curiosidades: "Faixa de altíssimo nível emocional com arranjo melancólico marcante e refrão profundo.",
+      pontosFortes: "Melodia cativante, arranjo rico em texturas e forte carga emotiva.",
+      mixagem: "Vocais expressivos, ambiência espaçosa e instrumentação acústica/elétrica equilibrada.",
+      instrumentos: "Violão, piano, guitarras e bateria suave com marcação de pratos.",
+      potenciaVocal: "Interpretação sentida, madura e expressiva.",
+      sentimento: "Saudade, reflexão profunda e melancolia.",
+      publico: "Apreciadores de baladas românticas e pop rock confessional.",
+      potencial: "Rádios FM e playlists de grande apelo emocional.",
+      lyrics: `É hora de... temos que enfrentar...
+Outra vez... o dia mais...
+Nada a fugir... sempre acreditar...
+No que se fez... o que se faz...
+Eu sei que... não dá mais...
+Tivemos o tempo... pra ser mais...
+Nem eu... tentei dizer... queria ter você...`
+    },
+    {
+      id: "na-beira-do-rio",
+      title: "Na Beira do Rio 2_2",
+      score: "9.95",
+      top: true,
+      artistRef: "Milton Nascimento / Almir Sater",
+      theme: "Jornada espiritual, transitoriedade e comunhão com a natureza",
+      quote: `"Na beira do rio o tempo descansa / a alma descobre o que é ser feliz"`,
+      ideal: "Obra-prima / Abertura de Concerto Conceitual",
+      status: "Altíssima (Obra-Prima Absoluta)",
+      curiosidades: "Obra magna folk/espiritual e orquestral, ocupando o topo absoluto do repertório.",
+      pontosFortes: "Arranjo orquestral rico em nuances acústicas, refrão hipnótico e profundidade poética.",
+      mixagem: "Imersiva e espacial com violões de nylon frontais e cordas orquestrais de grande amplitude.",
+      instrumentos: "Violão de nylon, viola caipira sutil, cello, piano acústico e percussão orgânica.",
+      potenciaVocal: "Barítono caloroso e profundo com passagens de altíssima expressividade emocional.",
+      sentimento: "Paz espiritual, conexão com as raízes, libertação e serenidade.",
+      publico: "Apreciadores de MPB de alto nível, folk acústico e música de prestígio.",
+      potencial: "Festivais de MPB, premiações e momentos de consagração ao vivo.",
+      lyrics: `Na beira do rio o tempo descansa
+A alma descobre o que é ser feliz
+O vento carrega a nossa esperança
+Fazendo de novo o que a vida quis...`
+    },
+    {
+      id: "estrada-do-coracao",
+      title: "Estrada do Coração",
+      score: "9.9",
+      top: true,
+      artistRef: "Roupa Nova / Bryan Adams",
+      theme: "Jornada de autodescoberta e maturidade",
+      quote: `"Pela estrada que me leva ao coração"`,
+      ideal: "Faixa-título / Encerramento triunfal",
+      status: "Altíssima (Obra de Prestígio)",
+      curiosidades: "Obra magna do repertório, concebida como uma viagem existencial de superação e identidade.",
+      pontosFortes: "Arranjo orquestrado progressivo, refrão apoteótico e rima poética inspirada.",
+      mixagem: "Camadas espaciais abertas, bateria imponente e piano acentuado.",
+      instrumentos: "Piano acústico, violão de aço, orquestração de cordas e guitarra solo.",
+      potenciaVocal: "Barítono aveludado nos versos com grande expansão em voz mista no refrão.",
+      sentimento: "Superação profunda, redenção e paz interior.",
+      publico: "Apreciadores de MPB conceitual e Pop Rock sofisticado.",
+      potencial: "Clímax de shows em estádio, trilha de cinema e novelas das oito.",
+      lyrics: `Pela estrada que me leva ao coração
+Vou seguindo sem olhar pra trás
+Cada passo apaga a solidão
+E a certeza de encontrar a paz
+
+Pela estrada que me leva ao coração...`
+    },
+    {
+      id: "alem-do-horizonte",
+      title: "Além do Horizonte",
+      score: "9.9",
+      top: true,
+      artistRef: "Guilherme Arantes / Almir Sater",
+      theme: "Finitude, autoanálise e busca existencial",
+      quote: `"Eu sei, o tempo passa... Eu sei, não somos nada"`,
+      ideal: "Obra de Prestígio / Fechamento Conceitual",
+      status: "Altíssima (Obra-Prima Acústica)",
+      curiosidades: "Composta no violão e voz; arranjo com respiração orgânica de sanfona, solo de guitarra melódico e clímax vocal emotivo.",
+      pontosFortes: "Letra filosófica madura, dinâmica de crescendo e textura acústica pé no chão.",
+      mixagem: "Base orgânica frontal com entrada de cordas dramáticas, solo marcante e fole caloroso.",
+      instrumentos: "Violão acústico, sanfona/acordeom, piano, cordas orquestrais, baixo e bateria.",
+      potenciaVocal: "Versos intimistas e reflexivos que explodem em agudos rasgados na ponte dramática.",
+      sentimento: "Transcendência, humildade, serenidade e aceitação do tempo.",
+      publico: "Apreciadores de MPB madura, canções existenciais e poesia acústica.",
+      potencial: "Trilhas de novelas/séries de prestígio, momentos altos de show e rádios adultas.",
+      lyrics: `Um dia vou olhar pra trás
+Para as coisas que perdi
+Um dia vou fechar meus olhos
+E só vou pensar em ti
+
+Um dia vou tentar entender
+Por que eu pareço com você
+Um dia eu vou olhar pra trás
+Sem ter remorso do que fiz
+
+O que eu quero não tem nome
+Está além do horizonte...`
+    },
+    {
+      id: "duas-vestes",
+      title: "Duas Vestes",
+      score: "9.9",
+      top: true,
+      artistRef: "Djavan / Ivan Lins",
+      theme: "Dualidade humana, escolhas e identidade profunda",
+      quote: `"Entre duas vestes escolhi o amor"`,
+      ideal: "Single de Prestígio / Festival de MPB",
+      status: "Altíssima (Sofisticação MPB)",
+      curiosidades: "Métrica refinada com harmonias vocais densas e arranjo orquestral sofisticado.",
+      pontosFortes: "Complexidade melódica inteligente e carga dramática arrebatadora.",
+      mixagem: "Equilíbrio impecável entre instrumentos acústicos e vocais em dueto.",
+      instrumentos: "Piano de cauda, violão nylon, cello e percussão fina.",
+      potenciaVocal: "Controle absoluto de registros médios e agudos expressivos.",
+      sentimento: "Introspecção, verdade e libertação emocional.",
+      publico: "Críticos musicais e público exigente de MPB.",
+      potencial: "Prêmios de composição e festivais culturais.",
+      lyrics: `Entre duas vestes eu vesti a paz
+O que ficou pra trás já não me atrai
+Entre duas vestes escolhi o amor...`
+    },
+    {
+      id: "levar-pro-mar",
+      title: "Levar pro Mar",
+      score: "9.9",
+      top: true,
+      artistRef: "Djavan / Marisa Monte",
+      theme: "Purificação, o poder das águas e limpeza da alma",
+      quote: `"Deixa o rio levar o que passou"`,
+      ideal: "Balada MPB / Trilha sonora relaxante",
+      status: "Altíssima (Poética e Serena)",
+      curiosidades: "Poética do perdão com arranjo sereno e dueto maduro.",
+      pontosFortes: "Fluidez rítmica leve e refrão magnético.",
+      mixagem: "Acústica cristalina e ambiência aquática envolvente.",
+      instrumentos: "Violão, piano elétrico Rhodes, flauta transversal e percussão leve.",
+      potenciaVocal: "Voz aveludada, sussurrada e cheia de calor.",
+      sentimento: "Perdão, renovação, leveza e paz.",
+      publico: "Amantes de MPB sofisticada e relaxante.",
+      potencial: "Rádios adultas e playlists de relaxamento e reflexão.",
+      lyrics: `Deixa o rio levar o que passou
+Deixa o mar lavar o que restou
+O que foi dor agora é só maré...`
+    },
+    {
+      id: "o-tempo",
+      title: "O Tempo (Versão 2)",
+      score: "9.9",
+      top: true,
+      artistRef: "Guilherme Arantes / Lô Borges",
+      theme: "A paciência do relógio e a sabedoria da espera",
+      quote: `"O tempo é quem cura, o tempo é quem traz"`,
+      ideal: "Single Principal / Hino de Superação",
+      status: "Altíssima (Obra-Prima Pop/MPB)",
+      curiosidades: "Letra concisa e profunda, Rhodes aveludado e clímax vocal perfeito.",
+      pontosFortes: "Mensagem universal sobre aceitação e maturidade temporal.",
+      mixagem: "Master limpa e dinâmica com forte apelo emotivo.",
+      instrumentos: "Rhodes piano, violão de aço, baixo fretless e bateria suave.",
+      potenciaVocal: "Barítono caloroso com subida emocionante nos agudos da ponte.",
+      sentimento: "Sabedoria, aceitação, esperança e cura.",
+      publico: "Amantes de grandes canções reflexivas nacionais.",
+      potencial: "Rádios FM, trilhas de novela e streaming de massa.",
+      lyrics: `O ponteiro não corre, apenas ensina
+A pressa da vida derruba na esquina
+O tempo é quem cura, o tempo é quem traz
+O rio que desce não olha pra trás...`
+    },
+    {
+      id: "to-saindo-por-cima",
+      title: "Tô Saindo por Cima",
+      score: "9.85",
+      artistRef: "Jota Quest / Tim Maia",
+      theme: "Superação com energia, otimismo e festa",
+      quote: `"Olha pro céu, eu tô saindo por cima!"`,
+      ideal: "Abertura de Show / Hit Dançante",
+      status: "Muito Alta (Dance-Pop Energético)",
+      curiosidades: "Dance-Pop/Funk 90s eletrizante de palco com groove contagiante.",
+      pontosFortes: "Baixo pulsante e energia de arena inconfundível.",
+      mixagem: "Punch elevado na bateria e graves marcantes.",
+      instrumentos: "Baixo groove, sintetizadores oitentistas, guitarras funk e bateria 4/4.",
+      potenciaVocal: "Voz rasgada de festa com atitude e muita energia.",
+      sentimento: "Euforia, vitória pessoal e celebração.",
+      publico: "Fãs de Pop dançante e pista de dança.",
+      potencial: "Festas, rádios jovens e abertura de shows.",
+      lyrics: `De cabeça erguida eu vou vencer
+O jogo virou pra valer
+Olha pro céu, eu tô saindo por cima...`
+    },
+    {
+      id: "voce-nao-me-compra",
+      title: "Você Não Me Compra",
+      score: "9.8",
+      artistRef: "Michael Jackson / Bruno Mars",
+      theme: "Amor-próprio, dignidade e rejeição ao materialismo",
+      quote: `"Pode ter grana, mas não manda no meu coração"`,
+      ideal: "Hit de rádio / Abertura de show",
+      status: "Altíssima (Hit Comercial)",
+      curiosidades: "Construída com inspiração direta no groove percussivo da era Off The Wall / Silk Sonic.",
+      pontosFortes: "Linha de baixo slap irresistível e refrão com resposta imediata do público.",
+      mixagem: "Bateria seca com pegada, metais cortantes e divisão estereofônica dinâmica.",
+      instrumentos: "Baixo slap, guitarra rítmica funkeada, trompetes e sintetizadores.",
+      potenciaVocal: "Divisão sincopada, dicção rápida e muita atitude de palco.",
+      sentimento: "Autoestima, altivez, energia contagiante e celebração.",
+      publico: "Fãs de Dance-Pop, Funk Pop clássico e Nu-Disco.",
+      potencial: "Abertura de shows, vídeos virais no TikTok/Reels e rádios jovens.",
+      lyrics: `Você pensa que manda no meu coração
+Com esse papo de pose e ostentação
+Pode ter grana, mas não manda no meu coração
+Você não me compra não...`
+    },
+    {
+      id: "viver-na-noite",
+      title: "Viver na Noite (Versão 2)",
+      score: "9.85",
+      artistRef: "George Michael / Sade",
+      theme: "Elegância urbana, mistério e liberdade noturna",
+      quote: `"Na noite a vida ganha outra cor"`,
+      ideal: "Late Night Soul / Lounge Sofisticado",
+      status: "Muito Alta (Sofisticação Noturna)",
+      curiosidades: "Late Night Soul libertador e sofisticado com ambiência cinematográfica.",
+      pontosFortes: "Clima envolvente e graves aveludados.",
+      mixagem: "Estéreo imersivo com texturas suaves de sintetizador.",
+      instrumentos: "Piano elétrico, baixo fretless, bateria eletrônica sutil e saxofone.",
+      potenciaVocal: "Timbre grave marcante e sussurros românticos.",
+      sentimento: "Liberdade, mistério, sensualidade e charme.",
+      publico: "Frequentadores de lounges, bares de jazz e ouvintes noturnos.",
+      potencial: "Playlists noturnas e trilhas urbanas.",
+      lyrics: `Viver na noite sem olhar o relógio
+O mundo dorme e eu busco o meu lugar...`
+    },
+    {
+      id: "castelos-de-areia",
+      title: "Castelos de Areia (Versão 1)",
+      score: "9.8",
+      artistRef: "Lulu Santos / Capital Inicial",
+      theme: "Fragilidade das ilusões e desconstrução de falsas promessas",
+      quote: `"Castelos de areia que o mar levou"`,
+      ideal: "Sophisti-Pop / Reflexão Urbana",
+      status: "Muito Alta (Pop com Crítica)",
+      curiosidades: "Sophisti-Pop com crítica social e solo expressivo de guitarra.",
+      pontosFortes: "Melodia cativante e refrão marcante.",
+      mixagem: "Guitarras limpas com chorus e baixo marcante.",
+      instrumentos: "Guitarra semi-acústica, baixo, bateria e teclados.",
+      potenciaVocal: "Interpretação firme e expressiva.",
+      sentimento: "Realismo, desapego e lucidez.",
+      publico: "Ouvintes de Pop Rock inteligente dos anos 80/90.",
+      potencial: "Rádios FM e trilhas sonoras.",
+      lyrics: `Construí castelos de areia no chão
+Achando que era pra durar...`
+    },
+    {
+      id: "quando-voce-me-olha-assim",
+      title: "Quando Você Me Olha Assim",
+      score: "9.8",
+      artistRef: "Roupa Nova / The Weeknd (Pop)",
+      theme: "Paz, transformação interior e renascimento do amor",
+      quote: `"No instante de paz, o meu mundo se refaz / sei que é tudo o que um dia quis pra mim"`,
+      ideal: "Hit Pop Romântico Solar / Single de Rádio",
+      status: "Muito Alta (Rádio Pop)",
+      curiosidades: "A versão oficial traz sustentação impecável das notas agudas no refrão.",
+      pontosFortes: "Harmonia limpa que transmite serenidade e bem-estar instantâneo.",
+      mixagem: "Sintetizadores espaciais límpidos com batida mid-tempo ritmada.",
+      instrumentos: "Sintetizadores analógicos, guitarra com chorus, pads e baixo melódico.",
+      potenciaVocal: "Contraste fluído entre versos graves e refrão luminoso.",
+      sentimento: "Paz de espírito, encantamento e gratidão romântica.",
+      publico: "Público amplo de Pop e Synth-Pop romântico.",
+      potencial: "Programação diurna de rádio, clipes em cenários naturais.",
+      lyrics: `No instante de paz, o meu mundo se refaz
+Sei que é tudo o que um dia quis pra mim
+Quando você me olha assim...`
+    },
+    {
+      id: "por-toda-a-vida",
+      title: "Por Toda a Vida",
+      score: "9.8",
+      artistRef: "Lulu Santos / Roupa Nova",
+      theme: "Declaração de amor eterno e compromisso",
+      quote: `"Eu quero ser pra você / um amor pra te ter, te levar, sempre amor"`,
+      ideal: "Single de rádio / Abertura do disco",
+      status: "Altíssima (Rádio Pop)",
+      curiosidades: "Composta especificamente para ser a faixa solar e o hino de rádio do projeto.",
+      pontosFortes: "Refrão explosivo, melodia memorável na primeira audição e ponte dinâmica.",
+      mixagem: "Sintetizadores oitentistas brilhantes e bateria pop pulsante.",
+      instrumentos: "Synth lead analógico, bateria 4/4 enérgica, guitarra pop e baixo sintetizado.",
+      potenciaVocal: "Voz mista cheia de brilho com notas agudas sustentadas com facilidade.",
+      sentimento: "Euforia apaixonada, otimismo e fidelidade.",
+      publico: "Grande público consumidor de Pop, Pop Rock e rádio comercial.",
+      potencial: "Single de rádio, casamentos e execuções em shows de grande porte.",
+      lyrics: `Por toda a vida eu vou te amar
+Não importa o tempo que passar
+Eu quero ser pra você
+Um amor pra te ter, te levar, sempre amor...`
+    },
+    {
+      id: "o-amor-chegou-tao-forte",
+      title: "O Amor Chegou Tão Forte",
+      score: "9.8",
+      artistRef: "Bryan Adams / Bon Jovi",
+      theme: "Arroubo romântico, paixão incontrolável e coros de arena",
+      quote: `"O amor chegou tão forte que abalou o meu chão"`,
+      ideal: "Power Ballad / Arena Rock",
+      status: "Muito Alta (Hit de Arena)",
+      curiosidades: "Hit comercial com coros de arena e guitarras marcantes.",
+      pontosFortes: "Refrão explosivo de estádio.",
+      mixagem: "Paredão de guitarras e coro encorpado.",
+      instrumentos: "Guitarras distorcidas, teclado sinfônico e bateria de arena.",
+      potenciaVocal: "Vocais potentes em voz mista com drive nos agudos.",
+      sentimento: "Paixão avassaladora e êxtase.",
+      publico: "Fãs de Rock romântico de arena.",
+      potencial: "Grandes shows e rádios de rock melódico.",
+      lyrics: `O amor chegou tão forte que mudou o meu olhar...`
+    },
+    {
+      id: "hoje-foi-dificil",
+      title: "Hoje Foi Difícil (Versão 3)",
+      score: "9.75",
+      artistRef: "Djavan / Cazuza",
+      theme: "Superação diária, cansaço e resiliência",
+      quote: `"Hoje foi difícil, mas eu não desisti"`,
+      ideal: "MPB Confessional / Acolhimento",
+      status: "Alta (Pop/MPB Íntimo)",
+      curiosidades: "Pop/MPB acolhedor de superação diária, com arranjo intimista e catártico.",
+      pontosFortes: "Letra honesta e identificação imediata.",
+      mixagem: "Foco total na voz e no violão com pads acolhedores.",
+      instrumentos: "Violão de nylon, piano elétrico e percussão leve.",
+      potenciaVocal: "Interpretação sincera, madura e próxima do ouvinte.",
+      sentimento: "Resiliência, cansaço superado e esperança.",
+      publico: "Ouvintes em busca de conforto e verdade na música.",
+      potencial: "Playlists reflexivas e rádios MPB.",
+      lyrics: `Hoje foi difícil encarar o espelho
+Ver que o dia exigiu demais de mim...`
+    },
+    {
+      id: "estou-a-caminho",
+      title: "Estou a Caminho",
+      score: "9.75",
+      artistRef: "Roupa Nova / Bruce Springsteen",
+      theme: "Jornada de retorno, reencontro e urgência do amor",
+      quote: `"Estou a caminho pra gente se encontrar"`,
+      ideal: "Pop Rock de Estrada / Hino de Viagem",
+      status: "Alta (Pop Rock Visceral)",
+      curiosidades: "Pop Rock visceral de estrada, marcando a busca incansável pelo reencontro.",
+      pontosFortes: "Ritmo acelerado e refrão contagiante.",
+      mixagem: "Guitarras estéreo bem abertas e bateria dinâmica.",
+      instrumentos: "Guitarras, baixo, bateria e piano de apoio.",
+      potenciaVocal: "Garra, energia e agudos marcantes.",
+      sentimento: "Urgência, saudade e determinação.",
+      publico: "Apreciadores de Pop Rock dinâmico e enérgico.",
+      potencial: "Viagens de carro, trilhas de estrada e abertura de shows.",
+      lyrics: `Estou a caminho pra gente se encontrar
+Não há distância que vá nos separar...`
+    },
+    {
+      id: "se-assim-for",
+      title: "Se Assim For",
+      score: "9.8",
+      artistRef: "Fábio Jr. / Guilherme Arantes",
+      theme: "Superação de feridas e recomeço maduro",
+      quote: `"Se a vida me deixou aqui / é porque eu ainda tenho o que viver"`,
+      ideal: "Single reflexivo / Trilha sonora",
+      status: "Muito Alta (Apelo Emocional)",
+      curiosidades: "Faixa autobiográfica sobre renascimento pessoal sem ressentimentos.",
+      pontosFortes: "Refrão com coro de estádio e versos confessionais marcantes.",
+      mixagem: "Transição orgânica do violão intimista para a explosão de banda completa.",
+      instrumentos: "Piano vintage, violão acústico, coro gospel e bateria pesada.",
+      potenciaVocal: "Voz sussurrada inicial crescendo para projeção dramática aberta.",
+      sentimento: "Resiliência, perdão e confiança no amanhã.",
+      publico: "Ouvintes de baladas profundas e MPB orquestrada.",
+      potencial: "Single de grande apelo em rádio FM e canais de streaming.",
+      lyrics: `Se assim For, que seja pra curar
+Se a dor passar, eu volto a respirar
+Se a vida me deixou aqui
+É porque eu ainda tenho o que viver...`
+    },
+    {
+      id: "te-levo-comigo",
+      title: "Te Levo Comigo",
+      score: "9.8",
+      artistRef: "George Michael / Babyface",
+      theme: "Entrega romântica e paixão sem julgamentos",
+      quote: `"Te guardo comigo / mesmo que o tempo não nos queira mais"`,
+      ideal: "Single noturno / Playlist R&B",
+      status: "Altíssima (Streaming/R&B)",
+      curiosidades: "Produção inspirada nas baladas noturnas refinadas de R&B contemporâneo e soul.",
+      pontosFortes: "Sensualidade melódica, graves aveludados e atmosfera intimista envolvente.",
+      mixagem: "Graves macios e envolventes, sintetizadores aveludados e ambiência noturna.",
+      instrumentos: "Fender Rhodes, baixo aveludado, bateria R&B orgánica e cordas sutis.",
+      potenciaVocal: "Timbre grave rico em harmônicos naturais com respiração controlada.",
+      sentimento: "Paixão serena, elegância romântica e conexão profunda.",
+      publico: "Público jovem-adulto, amantes de R&B moderno e neo-soul.",
+      potencial: "Playlists noturnas, lounges sofisticados e FM romântica.",
+      lyrics: `Te guardo comigo
+Mesmo que o tempo não nos queira mais
+Te levo na pele, te levo em paz
+O que vivemos ninguém desfaz...`
+    },
+    {
+      id: "rosas-no-verao",
+      title: "Rosas no Verão",
+      score: "9.8",
+      artistRef: "Roupa Nova / Gusttavo Lima (Bachata)",
+      theme: "Romance solar, calor e cumplicidade",
+      quote: `"Rosas no verão, minha eterna paixão / vejo flores pelo chão quando estou com você"`,
+      ideal: "Single de Verão / Rádio FM Comercial",
+      status: "Muito Alta (Hit Comercial Solar)",
+      curiosidades: "Balada solar com imagens de praia e amor; a versão pop/bachata dá o balanço cadenciado perfeito.",
+      pontosFortes: "Imagens poéticas fortes, solo com Stratocaster melódica e refrão aberto marcante.",
+      mixagem: "Bateria encorpada com graves bem definidos, piano elétrico limpo e chorus aveludado.",
+      instrumentos: "Piano elétrico, guitarras com chorus, baixo sólido, bateria pop/bachata.",
+      potenciaVocal: "Interpretação suave nos versos, abrindo em agudos abertos e luminosos no refrão.",
+      sentimento: "Encantamento, calor, leveza romântica e paixão.",
+      publico: "Ouvintes de Pop Romântico, Sertanejo Moderno e baladas de rádio FM.",
+      potencial: "Rádios FM comerciais, trilhas de novela solar e playlists de verão.",
+      lyrics: `Rosas no verão
+Sol no teu olhar
+Meu coração quer te encontrar
+Vem devagar, deixa acontecer
+Quero teu mar, quero me perder
+
+Rosas no verão, minha eterna paixão
+Vejo flores pelo chão quando estou com você
+Quero tanto te amar
+Seu sorriso é meu lugar
+Onde está você agora? Preciso tanto de você
+
+Brisa no cabelo, lua sobre o mar
+Teu beijo tão perto me faz sonhar
+Se a noite cair, eu vou te abraçar
+Se o dia surgir, vou continuar
+
+Rosas no verão, minha eterna paixão...`
+    },
+    {
+      id: "onde-quero-estar",
+      title: "Onde Quero Estar",
+      score: "9.7",
+      artistRef: "Guns N' Roses / Bryan Adams",
+      theme: "Segurança, paz e plenitude nos braços do amor",
+      quote: `"Em seus braços é onde eu quero estar, meu bem / nada no mundo importa..."`,
+      ideal: "Power Ballad de Arena / Trilha Sonora",
+      status: "Muito Alta (Rádio Pop Rock)",
+      curiosidades: "Evoca o peso de arena de Knockin' on Heaven's Door do Guns, com clímax vocal rasgado.",
+      pontosFortes: "Abertura poderosa do refrão e guitarras dobradas casadas com teclado épico.",
+      mixagem: "Som encorpado de arena, com bateria cheia e guitarras com presença.",
+      instrumentos: "Guitarras com distorção leve, bateria de rock, baixo sólido e teclado.",
+      potenciaVocal: "Agudos fortes com pegada de arena pop rock e interpretação visceral.",
+      sentimento: "Aconchego, alívio emocional e devoção romântica.",
+      publico: "Ouvintes de Pop Rock melódico e Hard Rock romântico clássico.",
+      potencial: "Trilhas de novelas, momentos altos de apresentações ao vivo.",
+      lyrics: `Quando o mundo desabar lá fora
+E a noite fria não passar
+Eu sei que não estou sozinho agora
+Em seus braços é onde eu quero estar...`
+    },
+    {
+      id: "nao-sei-explicar",
+      title: "Não Sei Explicar",
+      score: "9.7",
+      artistRef: "Roupa Nova / Richard Marx",
+      theme: "Distanciamento afetivo e dor do silêncio",
+      quote: `"Mas sinto que ainda estamos tão longe / mesmo sem sair do lugar"`,
+      ideal: "Single de Rádio FM / Trilha Dramática",
+      status: "Muito Alta (Apelo Emocional)",
+      curiosidades: "Power ballad sobre a dor de estar perto fisicamente, mas distante na alma antes do fim.",
+      pontosFortes: "Rampa melódica no pré-refrão, explosão dramática do refrão e ponte confessional.",
+      mixagem: "Piano elétrico vintage, bateria encorpada com reverberação e guitarras de sustentação.",
+      instrumentos: "Piano, sintetizadores 80s, bateria pesada, baixo e guitarras com reverb.",
+      potenciaVocal: "Extensão vocal completa, com graves contidos e refrão em voz mista aberta.",
+      sentimento: "Inconformismo romântico, angústia do distanciamento e arrependimento.",
+      publico: "Fãs de baladas românticas dos anos 80 e Pop Rock confessional.",
+      potencial: "Trilha de novela, rádios românticas FM e momentos altos de show.",
+      lyrics: `Não sei explicar o que aconteceu
+O silêncio entrou onde era você e eu
+Mas sinto que ainda estamos tão longe
+Mesmo sem sair do lugar...`
+    },
+    {
+      id: "pensamento-em-voce",
+      title: "Pensamento em Você",
+      score: "9.7",
+      artistRef: "Roupa Nova / A-ha",
+      theme: "Perseverança, certeza no amor e otimismo",
+      quote: `"Nada é fácil, tudo demora pra acontecer / mas lá na frente, sei que será: só eu e você"`,
+      ideal: "Hit Pop Solar / Rádio FM",
+      status: "Muito Alta (Rádio Pop)",
+      curiosidades: "Synth-Pop clássico com pulso rítmico reto e arpejos brilhantes de sintetizador analógico.",
+      pontosFortes: "Refrão extremamente cantarolável, batida dançante e mensagem de fidelidade.",
+      mixagem: "Bateria pop pulsante, sintetizadores analógicos com grande espacialidade estéreo.",
+      instrumentos: "Sintetizadores analógicos, guitarra com chorus, baixo sintetizado e bateria reta.",
+      potenciaVocal: "Vocal limpo, com afinação firme nos agudos e energia luminosa.",
+      sentimento: "Esperança, perseverança, certeza afetiva e alegria contagiante.",
+      publico: "Fãs de Synth-Pop, Flashback e Pop Rock comercial.",
+      potencial: "Rádios FM, viagens de carro e playlists de alto astral.",
+      lyrics: `Às vezes eu me sinto tão mal e só
+Você é o que eu preciso
+Na escuridão as noites são vazias
+Você aqui é tudo o que eu queria
+
+Eu penso no futuro, a gente lá curtindo o nosso mundo
+Mas cada vez que eu sinto estar mais perto
+Tudo muda, tudo é tão incerto
+
+Pensamento em você, nada para
+Olha ao redor, tudo está lá
+Estou com você sempre que pensar
+Sem jamais sofrer, temos que sonhar...`
+    },
+    {
+      id: "cuidar-de-voce",
+      title: "Cuidar de Você",
+      score: "9.7",
+      artistRef: "Roupa Nova / Fábio Jr.",
+      theme: "Compromisso afetivo, acolhimento e proteção",
+      quote: `"E não há como explicar / e não há como não te amar... eu vou cuidar de você"`,
+      ideal: "Pop Romântico / Trilha de Rádio FM",
+      status: "Muito Alta (Hit Comercial)",
+      curiosidades: "Balada pop com resposta em coro vocal clássico no refrão no estilo anos 80.",
+      pontosFortes: "Refrão em formato pergunta/resposta, linha de teclado marcante e apelo popular imediato.",
+      mixagem: "Voz frontal e límpida com contracantos em coro estéreo e bateria ritmada.",
+      instrumentos: "Sintetizadores brilhantes, piano elétrico, coro vocal, baixo e bateria 4/4.",
+      potenciaVocal: "Interpretação acolhedora, afetuosa e melódica.",
+      sentimento: "Proteção, segurança, amor incondicional e carinho.",
+      publico: "Grandes massas, casais e ouvintes de Pop romântico comercial.",
+      potencial: "Casamentos, trilhas de rádio FM e canções de novela.",
+      lyrics: `Tudo passou e nada mudou
+Um dia a mais e aqui estou
+Tenho tanto pra conversar
+Ouça agora eu vou te falar
+
+Eu vou cuidar de você (cuidar de você)
+Eu vou cuidar de você (cuidar de você)...`
+    },
+    {
+      id: "depois-do-arco-iris",
+      title: "Depois do Arco-Íris",
+      score: "9.7",
+      artistRef: "Guilherme Arantes / Coldplay",
+      theme: "Renovação, esperança após a tempestade e reencontro",
+      quote: `"Que mesmo na dor ainda há lugar / pra um novo dia, pra um novo amor"`,
+      ideal: "Single Pop Solar / Rádio FM / Abertura",
+      status: "Muito Alta (Inspiracional/FM)",
+      curiosidades: "Balada solar de piano que retrata a superação da dor e a promessa de dias melhores.",
+      pontosFortes: "Refrão extremamente radiofônico, piano luminoso e ponte com subida dramática aos agudos.",
+      mixagem: "Piano acústico límpido no centro, bateria mid-tempo bem assentada e cordas com ar.",
+      instrumentos: "Piano acústico, sintetizadores suaves, bateria pop, baixo e cordas.",
+      potenciaVocal: "Voz calorosa e límpida, com grande amplitude melódica na ponte final.",
+      sentimento: "Esperança, renascimento emocional, ternura e alegria serena.",
+      publico: "Público amplo de Pop Nacional, MPB comercial e rádio FM diurna.",
+      potencial: "Trilha de novelas, aberturas inspiracionais e rádios FM comerciais.",
+      lyrics: `A chuva passou, o céu se abriu
+Um raio de sol de longe surgiu
+As cores no céu me fazem lembrar
+Que mesmo na dor ainda há lugar...`
+    },
+    {
+      id: "no-fim-das-contas",
+      title: "No Fim das Contas",
+      score: "9.7",
+      artistRef: "Fábio Jr. / Tim Maia (Romântico)",
+      theme: "Maturidade, perdão e gratidão pelo amor vivido",
+      quote: `"A gente só quer se entender / e olhar pra trás sem se doer / só agradecer o que foi"`,
+      ideal: "MPB Pop / Adult Contemporary / Rádio FM",
+      status: "Muito Alta (Apelo Emocional)",
+      curiosidades: "Reflexão madura sobre separação onde o amor se transforma em gratidão e respeito.",
+      pontosFortes: "Letra profunda e direta que gera identificação imediata.",
+      mixagem: "Voz intimista colocada no primeiro plano com arranjo acolhedor.",
+      instrumentos: "Piano elétrico, violão de aço, percussão suave e baixo fretless.",
+      potenciaVocal: "Interpretação sentida, com riqueza de dinâmicas suaves.",
+      sentimento: "Maturidade, perdão, serenidade e aceitação.",
+      publico: "Público adulto (+25 anos) e apreciadores de letras maduras.",
+      potencial: "Trilhas dramáticas, rádios adultas e playlists reflexivas.",
+      lyrics: `No fim das contas o que sobra é a paz
+O que passou ficou pra trás
+A gente só quer se entender
+E olhar pra trás sem se doer...`
+    },
+    {
+      id: "como-posso-te-deixar-ir",
+      title: "Como Posso Te Deixar Ir",
+      score: "9.7",
+      artistRef: "Luan Santana / Michael Bolton",
+      theme: "Inconformismo romântico e memória afetiva eterna",
+      quote: `"Me diz como posso seguir / se tudo em mim ainda é você"`,
+      ideal: "Power Ballad Romântica / Hit de Rádio FM",
+      status: "Muito Alta (Rádio Romântica)",
+      curiosidades: "Uma das composições com maior carga dramática de dor e inconformismo.",
+      pontosFortes: "Subida melódica vertiginosa que desemboca no grito desesperado do refrão.",
+      mixagem: "Contraste dinâmico elevado entre versos calmos e explosão de banda.",
+      instrumentos: "Piano, orquestra de cordas, bateria de rock e guitarras com reverb.",
+      potenciaVocal: "Ampla extensão vocal, exigindo projeção dramática potente.",
+      sentimento: "Saudade profunda, angústia da perda e inconformismo.",
+      publico: "Fãs de baladas dramáticas e de cantores com grande potência vocal.",
+      potencial: "Trilha principal de novela dramática, rádio FM Romântica.",
+      lyrics: `Me diz como posso seguir
+Se tudo em mim ainda é você
+Como posso te deixar ir
+Se meu peito insiste em doer...`
+    },
+    {
+      id: "se-for-verdade",
+      title: "Se For Verdade",
+      score: "9.7",
+      artistRef: "Lulu Santos / Jota Quest",
+      theme: "Coragem afetiva e viver o amor sem máscaras",
+      quote: `"Se for verdade / não esconda as mãos dadas / ande sem medo por essas estradas"`,
+      ideal: "Hit de rádio FM / Pop Rock Solar",
+      status: "Muito Alta (Rádio Pop Rock)",
+      curiosidades: "Inspirada no espírito vibrante do pop rock nacional com guitarras solares.",
+      pontosFortes: "Métrica ágil e mensagem direta encorajando o compromisso sincero.",
+      mixagem: "Guitarras abafadas no verso que se abrem com brilho e energia no refrão.",
+      instrumentos: "Guitarras rítmicas, sintetizadores, baixo e bateria reta.",
+      potenciaVocal: "Voz com dicção limpa, tom encorajador e presença marcante.",
+      sentimento: "Coragem, transparência e celebração do amor livre de medos.",
+      publico: "Jovens e adultos adeptos de Pop Rock diurno e animado.",
+      potencial: "Rádios Pop FM, festivais abertos e trilhas solares.",
+      lyrics: `Se for verdade, não esconda as mãos dadas
+Ande sem medo por essas estradas
+Viver de aparências não leva a nada...`
+    },
+    {
+      id: "garota-dos-meus-sonhos",
+      title: "Garota dos Meus Sonhos",
+      score: "9.7",
+      artistRef: "Bruno Mars / Earth, Wind & Fire",
+      theme: "Encantamento, paixão solar e magnetismo",
+      quote: `"No seu abraço eu sou real / me faz viver um sonho sem igual"`,
+      ideal: "Hit de verão / Pista de dança",
+      status: "Muito Alta (Comercial/Viral)",
+      curiosidades: "Busca a energia efervescente do Funk-Pop retrô no estilo Chic.",
+      pontosFortes: "Guitarra rítmica contagiante e ritmo dançante irresistível.",
+      mixagem: "Frequências agudas brilhantes e bateria com batida seca no quatro por quatro.",
+      instrumentos: "Guitarras funk, sintetizadores analógicos, baixo sincopado e percussão.",
+      potenciaVocal: "Interpretação descontraída, com swing rítmico e falsetes.",
+      sentimento: "Entusiasmo, euforia, conquista e diversão.",
+      publico: "Fãs de Pop dançante, pistas de dança e academias.",
+      potencial: "Baladas de verão, playlists de festa, TikTok e academias.",
+      lyrics: `No seu abraço eu sou real
+Me faz viver um sonho sem igual
+Garota dos meus sonhos, meu carnaval...`
+    },
+    {
+      id: "baila-comigo",
+      title: "Baila Comigo",
+      score: "9.7",
+      artistRef: "Gloria Estefan / Latino Pop 80s",
+      theme: "Sedução, pista de dança e paixão latina",
+      quote: `"Vem cá dançar, vem me abraçar / que a noite é feita pra gente sonhar"`,
+      ideal: "Pista latina / Verão / Rádio Pop Dance",
+      status: "Muito Alta (Comercial/Dança)",
+      curiosidades: "Faixa vibrante que une o pop oitentista com percussões dançantes de verão.",
+      pontosFortes: "Batida envolvente, refrão aberto e atmosfera contagiante de festa.",
+      mixagem: "Percussão latina destacada, metais brilhantes e vocais frontais com energia.",
+      instrumentos: "Congas, timbales, sintetizadores de sopro, baixo dançante e guitarras rítmicas.",
+      potenciaVocal: "Voz com bastante brilho, apelo dançante e ritmo envolvente.",
+      sentimento: "Festa, sedução, alegria e celebração a dois.",
+      publico: "Público de festas, academias, pistas de dança e rádio FM comercial.",
+      potencial: "DJs, academias, festas temáticas de verão e redes sociais.",
+      lyrics: `Vem cá dançar, vem me abraçar
+Que a noite é feita pra gente sonhar
+Baila comigo até o sol raiar...`
+    },
+    {
+      id: "na-chuva-com-voce",
+      title: "Na Chuva Com Você",
+      score: "9.7",
+      artistRef: "Vitor Kley / Melim",
+      theme: "Leveza, cumplicidade e romance descompromissado",
+      quote: `"Na chuva com você / o tempo vai parar / só quero te abraçar"`,
+      ideal: "Single pop leve / Clipe solar",
+      status: "Muito Alta (Viral/Streaming)",
+      curiosidades: "Clima romântico e cinematográfico retratando o amor nas coisas simples.",
+      pontosFortes: "Refrão extremamente doce e melodia que gruda com facilidade.",
+      mixagem: "Textura sonora aveludada, vocais com ar e sintetizadores sutis.",
+      instrumentos: "Sintetizadores suaves, violão rítmico e bateria eletrônica leve.",
+      potenciaVocal: "Interpretação doce, suave e intimista.",
+      sentimento: "Doçura, aconchego, romance juvenil e leveza.",
+      publico: "Adolescentes e jovens casais, fãs de Indie Pop e Pop Leve.",
+      potencial: "Trilhas de vídeos românticos nas redes, clipes ao ar livre.",
+      lyrics: `Na chuva com você
+O tempo vai parar
+Esquece o mundo lá fora
+Só quero te abraçar...`
+    },
+    {
+      id: "de-vez-em-quando",
+      title: "De Vez em Quando",
+      score: "9.7",
+      artistRef: "A-ha / Roupa Nova",
+      theme: "A lembrança inevitável de um amor marcante",
+      quote: `"De vez em quando / penso em você... custa esquecer"`,
+      ideal: "Hit de rádio FM / Pop oitentista",
+      status: "Muito Alta (Rádio FM)",
+      curiosidades: "Explora a nostalgia de memórias espontâneas que surgem no dia a dia.",
+      pontosFortes: "Balanço Synth-Pop contagiante com letra que fala sobre saudade sem melodrama.",
+      mixagem: "Arranjo dinâmico com sintetizadores pulsantes e linha de baixo melódica.",
+      instrumentos: "Sintetizadores, baixo elétrico com pegada, bateria oitentista e guitarras.",
+      potenciaVocal: "Vocal rítmico com boa projeção nos agudos médios.",
+      sentimento: "Nostalgia saudável, lembrança carinhosa e ritmo contagiante.",
+      publico: "Ouvintes de Flashback, Synth-Pop e Pop Rock clássico.",
+      potencial: "Rádios FM contemporâneas, viagens de carro e flashbacks.",
+      lyrics: `De vez em quando penso em você
+Passa um filme que custa esquecer
+Um sorriso solto, um toque no ar...`
+    },
+    {
+      id: "chama-e-fogo",
+      title: "Chama e Fogo",
+      score: "9.7",
+      artistRef: "Bon Jovi / Survivor",
+      theme: "Superação a dois e vitória contra adversidades",
+      quote: `"Você é chama e fogo / que incendeia o jogo!"`,
+      ideal: "Clímax de arena / Trilha motivacional",
+      status: "Muito Alta (Arena Pop Rock)",
+      curiosidades: "Composta como música de empoderamento e triunfo conjunto.",
+      pontosFortes: "Bateria enérgica com sintetizadores cortantes e clímax explosivo.",
+      mixagem: "Compressão de arena rock com paredão de som poderoso.",
+      instrumentos: "Guitarras distorcidas, sintetizadores pesados e bateria reta de estádio.",
+      potenciaVocal: "Interpretação com drive vocal, alta energia e atitude de rockstar.",
+      sentimento: "Poder, motivação, superação e adrenalina.",
+      publico: "Praticantes de esportes, fãs de Rock de arena e Pop enérgico.",
+      potencial: "Entrada triunfal de shows, aberturas de eventos esportivos.",
+      lyrics: `Você é chama e fogo
+Que incendeia o jogo!
+Nada pode nos parar agora...`
+    },
+    {
+      id: "so-por-agora",
+      title: "Só Por Agora",
+      score: "9.7",
+      artistRef: "Silk Sonic / Daft Punk",
+      theme: "Conexão casual, liberdade e atração no presente",
+      quote: `"Só por agora me deixa te amar / a noite é curta pra gente esperar"`,
+      ideal: "Balada de pista / Nu-Disco",
+      status: "Muito Alta (Pistas/DJs)",
+      curiosidades: "Alinhada com a moderna onda Nu-Disco inspirada em Silk Sonic.",
+      pontosFortes: "Linha de baixo sincopada de altíssimo nível e balanço elegante.",
+      mixagem: "Graves redondos, estéreo nítido e percussão de pista marcante.",
+      instrumentos: "Baixo elétrico funk, teclado Rhodes, guitarra limpa e sintetizadores.",
+      potenciaVocal: "Interpretação sedutora, fluida e cheia de balanço.",
+      sentimento: "Sedução, liberdade, desapego positivo e festa.",
+      publico: "Frequentadores de baladas, bares requintados e sunsets.",
+      potencial: "DJs, festas noturnas, sunsets e academias.",
+      lyrics: `Só por agora me deixa te amar
+A noite é curta pra gente esperar
+Sem amanhã, sem promessas no ar...`
+    },
+    {
+      id: "novo-por-aqui",
+      title: "Novo Por Aqui",
+      score: "9.6",
+      artistRef: "Phil Collins / Capital Inicial (Acústico)",
+      theme: "Recomeço, nova jornada e busca por pertencimento",
+      quote: `"Novo por aqui, buscando algo mais / a vida me diz que é hora de mudar"`,
+      ideal: "AOR / Synth-Pop / Trilha de Abertura",
+      status: "Alta (Streaming/Rádio Pop)",
+      curiosidades: "Narra a experiência de chegar a uma nova cidade e reconstruir a rotina.",
+      pontosFortes: "Forte carga de identificação pessoal para quem passa por transições de vida.",
+      mixagem: "Guitarras com texturas limpas, sintetizadores espaciais e ambiência urbana.",
+      instrumentos: "Guitarras com efeito delay/chorus, sintetizadores, baixo e bateria 4/4.",
+      potenciaVocal: "Voz firme, acolhedora e com timbre equilibrado.",
+      sentimento: "Esperança, coragem para recomeçar e curiosidade.",
+      publico: "Jovens e adultos vivenciando novos ciclos de vida e mudanças.",
+      potencial: "Abertura de séries/vlogs, playlists de estrada e rádios pop.",
+      lyrics: `Novo por aqui, buscando algo mais
+A vida me diz que é hora de mudar
+Deixar as malas cheias pelo chão...`
+    },
+    {
+      id: "te-lembro-em-silencio",
+      title: "Te Lembro em Silêncio",
+      score: "9.6",
+      artistRef: "Djavan / Caetano Veloso",
+      theme: "Saudade contida, afeto maduro e cicatrizes do tempo",
+      quote: `"Te lembro em silêncio / como um quadro sem cor / como um sonho vivo..."`,
+      ideal: "MPB Acústica Intimista / Trilha reflexiva",
+      status: "Alta (Prestígio/Crítica)",
+      curiosidades: "Composição intimista com foco na beleza poética da saudade serena.",
+      pontosFortes: "Profundidade lírica e arranjo de violão de alta sensibilidade.",
+      mixagem: "Espaço intimista, vocais muito próximos ao ouvinte e ressonância natural.",
+      instrumentos: "Violão de nylon solado, violoncelo sutil e percussão de esteira.",
+      potenciaVocal: "Vocal suave, focado em respiração e no calor dos graves.",
+      sentimento: "Saudade madura, respeito ao passado e introspecção poética.",
+      publico: "Apreciadores de MPB clássica, violão e poesia cantada.",
+      potencial: "Trilhas dramáticas intimistas, programas acústicos e teatros.",
+      lyrics: `Te lembro em silêncio
+Como um quadro sem cor
+Como um sonho vivo
+Que guardou o amor...`
+    },
+    {
+      id: "eu-nunca-disse",
+      title: "Eu Nunca Disse",
+      score: "9.6",
+      artistRef: "Boyz II Men / Fábio Jr.",
+      theme: "Confissão sincera de amor guardado",
+      quote: `"Eu nunca disse, mas eu te amo / minha vida sem você não importa"`,
+      ideal: "R&B clássico / Declaração romântica",
+      status: "Alta (Rádio Romântica)",
+      curiosidades: "Construída no formato clássico de confissão tardia de sentimentos.",
+      pontosFortes: "Métrica curta e refrão com resposta apaixonada.",
+      mixagem: "Bateria R&B com peso nos médios e teclados aveludados.",
+      instrumentos: "Piano elétrico, cordas, baixo e bateria cadenciada.",
+      potenciaVocal: "Projeção vocal expressiva com modulações no refrão.",
+      sentimento: "Confissão romântica, alívio, vulnerabilidade e paixão.",
+      publico: "Fãs de R&B clássico dos anos 90 e canções de declaração.",
+      potencial: "Trilhas de casais em novelas, rádios românticas noturnas.",
+      lyrics: `Eu nunca disse, mas guardei no olhar
+Tive tanto medo de me machucar
+Eu nunca disse, mas eu te amo...`
+    },
+    {
+      id: "te-levo-no-olhar",
+      title: "Te Levo no Olhar",
+      score: "9.6",
+      artistRef: "Richard Marx / Roupa Nova",
+      theme: "Saudade profunda e conexão visual inesquecível",
+      quote: `"Mesmo longe, eu te levo no meu olhar"`,
+      ideal: "Power ballad dramática / Vitrine vocal",
+      status: "Alta (Shows/Baladas)",
+      curiosidades: "Focada na memória visual de quem marcou a vida e ficou guardado no olhar.",
+      pontosFortes: "Sustentação de agudos em voz mista no clímax da canção.",
+      mixagem: "Amplo alcance dinâmico com reverberação rica e envolvente.",
+      instrumentos: "Piano acústico, sintetizadores dramáticos, guitarra solo e bateria.",
+      potenciaVocal: "Alta exigência vocal nos momentos de clímax melódico.",
+      sentimento: "Saudade marcante, lealdade afetiva e intensidade.",
+      publico: "Ouvintes de baladas românticas épicas e apreciadores de técnica vocal.",
+      potencial: "Momento vocal de destaque em shows e rádios adultas.",
+      lyrics: `Mesmo longe, eu te levo no meu olhar
+Nada nesse mundo vai nos separar...`
+    },
+    {
+      id: "remember-what-i-told-you",
+      title: "Remember What I Told You",
+      score: "9.6",
+      artistRef: "Brian McKnight / Boyz II Men",
+      theme: "Promessa atemporal e nostalgia internacional",
+      quote: `"Remember what I told you / true love never dies"`,
+      ideal: "Crossover internacional / Feat",
+      status: "Média-Alta (Nicho R&B)",
+      curiosidades: "Composição em inglês que evoca as grandes baladas dos anos 90.",
+      pontosFortes: "Modulação de tom clássica e arranjo de cordas de peso internacional.",
+      mixagem: "Masterização polida nos padrões clássicos do R&B americano.",
+      instrumentos: "Piano, cordas orquestradas, guitarra limpa e bateria R&B.",
+      potenciaVocal: "Pronúncia cuidada e interpretação aveludada em inglês.",
+      sentimento: "Nostalgia universal, promessa eterna e sofisticação.",
+      publico: "Fãs de baladas internacionais dos anos 80/90 e R&B clássico.",
+      potencial: "Playlists internacionais de R&B nostálgico e rádios adult contemporâneas.",
+      lyrics: `Remember what I told you
+When the night was cold and blue
+True love never dies
+I will be right here for you...`
+    },
+    {
+      id: "o-amor-que-eu-nunca-soube-dizer",
+      title: "O Amor Que Eu Nunca Soube Dizer",
+      score: "9.6",
+      artistRef: "Milton Nascimento / Flávio Venturini",
+      theme: "Arrependimento e palavras não ditas",
+      quote: `"Guardei no peito o amor que eu nunca soube dizer"`,
+      ideal: "Trilha cinematográfica / MPB Acústica",
+      status: "Alta (Crítica/Prestígio)",
+      curiosidades: "Poesia dramática sobre o arrependimento do silêncio afetivo.",
+      pontosFortes: "Piano e violoncelo criando uma atmosfera de teatro/filme.",
+      mixagem: "Som orgânico, sem artifícios digitais agressivos.",
+      instrumentos: "Piano acústico, violoncelo, violino e clarinete sutil.",
+      potenciaVocal: "Canto teatral e contido, transmitindo a dor das palavras guardadas.",
+      sentimento: "Arrependimento, melancolia serena e beleza poética.",
+      publico: "Crítica musical, fãs de MPB cult e música de concerto moderna.",
+      potencial: "Trilha sonora de cinema, séries dramáticas e teatro.",
+      lyrics: `Guardei no peito o amor que eu nunca soube dizer
+O tempo correu e me ensinou a perder...`
+    },
+    {
+      id: "onde-voce-foi",
+      title: "Onde Você Foi",
+      score: "9.5",
+      artistRef: "Sade / Ed Motta",
+      theme: "Abandono sutil, frieza e elegância noturna",
+      quote: `"Você finge frieza só com o olhar... onde você foi?"`,
+      ideal: "Lounge / Jazz Bar / Fim de noite",
+      status: "Média-Alta (Público Adulto)",
+      curiosidades: "Explora elementos de Smooth Jazz e Bossa sofisticada.",
+      pontosFortes: "Harmonia rica com acordes dissonantes e baixo aveludado.",
+      mixagem: "Clima acústico e elegante com ambiência de jazz club.",
+      instrumentos: "Piano elétrico suave, contrabaixo acústico, pratos e sax sutil.",
+      potenciaVocal: "Voz sussurrada e relaxada, cheia de nuances interpretativas.",
+      sentimento: "Dúvida, charme noturno, desilusão elegante e mistério.",
+      publico: "Público seleto de jazz bars, restaurantes e MPB sofisticada.",
+      potencial: "Ambientes lounge, fins de noite e rádios de jazz/MPB contemporânea.",
+      lyrics: `Você finge frieza só com o olhar
+Onde você foi me deixar?
+O café esfriou na mesa do bar...`
+    },
+    {
+      id: "medo-do-amor",
+      title: "Medo do Amor",
+      score: "9.5",
+      artistRef: "Cazuza / Frejat",
+      theme: "Insegurança emocional e barreira contra o afeto",
+      quote: `"O medo de amar me fez recuar"`,
+      ideal: "Rock de rádio / Apelo jovem",
+      status: "Alta (Rock Melódico)",
+      curiosidades: "Trata do conflito interior entre querer amar e o receio de sofrer de novo.",
+      pontosFortes: "Riff de guitarra marcante com refrão pop rock direto.",
+      mixagem: "Bateria presente e guitarras com boa textura de overdrive.",
+      instrumentos: "Guitarras elétricas com distorção, baixo pesado e bateria de rock.",
+      potenciaVocal: "Vocal rasgado com atitude jovem e dinâmica enérgica.",
+      sentimento: "Insegurança, defesa emocional, vulnerabilidade e força.",
+      publico: "Jovens ouvintes de Pop Rock e Rock Melódico nacional.",
+      potencial: "Rádios jovens, playlists de rock e festivais estudantis.",
+      lyrics: `O medo de amar me fez recuar
+Fechei as portas pra não me queimar...`
+    },
+    {
+      id: "te-dou-meu-mundo",
+      title: "Te Dou Meu Mundo",
+      score: "9.5",
+      artistRef: "José Augusto / Fábio Jr.",
+      theme: "Generosidade romântica e entrega total",
+      quote: `"Se você quiser, eu te dou o meu mundo"`,
+      ideal: "Balada pop romântica clássica",
+      status: "Alta (Rádio Romântica)",
+      curiosidades: "Composição na tradição das grandes declarações de amor da MPB romântica.",
+      pontosFortes: "Refrão doce e melodia que transmite confiança e carinho.",
+      mixagem: "Arranjo suave com destaque para a voz e os teclados acolhedores.",
+      instrumentos: "Piano, violões acústicos, pads e bateria leve.",
+      potenciaVocal: "Voz limpa, afetuosa e sem esforço dramático pesado.",
+      sentimento: "Generosidade, carinho puro, segurança e entrega.",
+      publico: "Casais, românticos convictos e ouvintes de rádio FM.",
+      potencial: "Rádios populares, casamentos e declarações românticas.",
+      lyrics: `Se você quiser, eu te dou o meu mundo
+Um sentimento limpo e profundo...`
+    },
+    {
+      id: "sopro-da-ausencia",
+      title: "Sopro da Ausência",
+      score: "9.5",
+      artistRef: "Almir Sater / Renato Teixeira",
+      theme: "Solidão poética e o vazio da partida",
+      quote: `"O vento lá fora é o sopro da sua ausência"`,
+      ideal: "MPB cult / Acústico de peso",
+      status: "Média-Alta (Crítica)",
+      curiosidades: "Composição poética focada no impacto do vazio pós-rompimento.",
+      pontosFortes: "Metáfora do vento com a ausência e riqueza harmônica profunda.",
+      mixagem: "Acústica limpa, valorizando as cordas do violão e o espaço da voz.",
+      instrumentos: "Violão acústico de nylon, baixo acústico e efeitos sutis de vento.",
+      potenciaVocal: "Uso consciente do registro grave de peito, ressonante e sóbrio.",
+      sentimento: "Vazio, introspecção, saudade e melancolia bela.",
+      publico: "Apreciadores de poesia acústica e MPB intimista.",
+      potencial: "Shows intimistas em teatro, programas culturais de música.",
+      lyrics: `O vento lá fora é o sopro da sua ausência
+Que bate na porta e me cobra paciência...`
+    },
+    {
+      id: "vem-pra-casa",
+      title: "Vem pra Casa",
+      score: "9.4",
+      artistRef: "Chitãozinho & Xororó (Romântico) / Luan Santana",
+      theme: "Reconciliação, aconchego e pedido de retorno",
+      quote: `"Vem pra casa, o seu lugar é aqui"`,
+      ideal: "Pop acústico / Rádio popular",
+      status: "Alta (Comercial Simples)",
+      curiosidades: "Construída com foco na simplicidade e na comunicação afetiva direta.",
+      pontosFortes: "Refrão curto e memorável com apelo de reconciliação de casal.",
+      mixagem: "Balanço direto, voz límpida e instrumentos bem recortados.",
+      instrumentos: "Violão base, teclado, baixo e bateria pop leve.",
+      potenciaVocal: "Contraste caloroso entre as estrofes graves e o refrão mais agudo.",
+      sentimento: "Acolhimento, desejo de volta, perdão e conforto.",
+      publico: "Grande público consumidor de canções românticas populares.",
+      potencial: "Programação de rádio comercial diurna e serenatas.",
+      lyrics: `Vem pra casa, o seu lugar é aqui
+Já esqueci o que me fez sofrer...`
+    },
+    {
+      id: "quando-voce-se-foi",
+      title: "Quando Você Se Foi",
+      score: "9.3",
+      artistRef: "Adele / Guilherme Arantes",
+      theme: "Luto de relacionamento e dor contida",
+      quote: `"A casa ficou vazia quando você se foi"`,
+      ideal: "Balada melancólica de álbum",
+      status: "Média (Faixa de Catálogo)",
+      curiosidades: "Retrata a sensação física do silêncio de uma casa após o fim de uma convivência.",
+      pontosFortes: "Sinceridade do verso e melancolia contida sem apelos dramáticos forçados.",
+      mixagem: "Ambiência espaçosa remetendo a uma sala vazia.",
+      instrumentos: "Piano, cordas sutis e violão dedilhado.",
+      potenciaVocal: "Interpretação suave, contida e com respiros audíveis.",
+      sentimento: "Solidão, luto afetivo, aceitação da realidade e silêncio.",
+      publico: "Ouvintes passando por momentos de reflexão e cura emocional.",
+      potencial: "Faixa de transição em álbuns e trilhas reflexivas.",
+      lyrics: `A casa ficou vazia quando você se foi
+Não há culpados entre nós dois...`
+    },
+    {
+      id: "ela-de-verde",
+      title: "Ela de Verde",
+      score: "9.2",
+      artistRef: "Silva / Duda Beat",
+      theme: "Atração visual marcante e ritmo urbano",
+      quote: `"Ela de verde passa e para o tráfego"`,
+      ideal: "Som de rua / Playlist Mid-tempo",
+      status: "Média-Alta (Streaming)",
+      curiosidades: "Composição com narrativa urbana contemporânea focada em impacto visual.",
+      pontosFortes: "Balanço moderno com batida envolvente e métrica atualizada.",
+      mixagem: "Graves pronunciados e batida com influência de R&B moderno/urban.",
+      instrumentos: "Sintetizadores modernos, bateria eletrônica e baixo 808 suave.",
+      potenciaVocal: "Vocal rítmico, quase falado nos versos, abrindo no refrão.",
+      sentimento: "Fascínio, atração urbana, mistério e estilo.",
+      publico: "Jovens ouvintes de Streaming urbano e Pop contemporâneo.",
+      potencial: "Playlists urbanas, vídeos de moda/lifestyle nas redes sociais.",
+      lyrics: `Ela de verde passa e para o tráfego
+Um jeito calmo, quase cinematográfico...`
+    },
+    {
+      id: "luz-em-mim",
+      title: "Luz em Mim",
+      score: "9.1",
+      artistRef: "Kirk Franklin / Leonardo Gonçalves",
+      theme: "Esperança, cura pessoal e renovação",
+      quote: `"Acenda essa luz em mim de novo"`,
+      ideal: "Soul congregacional / Balada inspiradora",
+      status: "Média (Inspiracional)",
+      curiosidades: "Faixa de apelo motivacional e espiritual sobre encontrar força interior.",
+      pontosFortes: "Crescimento harmônico com coro que remete ao soul/gospel clássico.",
+      mixagem: "Arranjo com bastante espaço para o coro e piano límpido.",
+      instrumentos: "Piano, órgão Hammond sutil, coro vocal e bateria cadenciada.",
+      potenciaVocal: "Vocal com apelo de peito e notas expressivas de esperança.",
+      sentimento: "Cura, renovação, fé na vida e renascimento moral.",
+      publico: "Apreciadores de canções motivacionais, soul e música inspiradora.",
+      potencial: "Momentos reflexivos em palestras, trilhas motivacionais e igrejas/eventos.",
+      lyrics: `Acenda essa luz em mim de novo
+Limpa as cinzas do meu peito...`
+    },
+    {
+      id: "sentir-o-teu-amor",
+      title: "Sentir o Teu Amor",
+      score: "8.8",
+      artistRef: "KLB / Bro'z",
+      theme: "Desejo direto e necessidade física de carinho",
+      quote: `"Tudo o que eu quero é sentir o teu amor"`,
+      ideal: "Faixa pop funcional",
+      status: "Média (Comercial Direto)",
+      curiosidades: "Composição pop rápida e direta, focada na necessidade física do toque e do amor.",
+      pontosFortes: "Refrão simples e assimilação imediata.",
+      mixagem: "Mixagem padrão comercial, polida e sem complexidades orquestrais.",
+      instrumentos: "Sintetizadores, violão base e bateria pop reta.",
+      potenciaVocal: "Canto acessível, funcional e descontraído.",
+      sentimento: "Desejo, carinho físico e simplicidade romântica.",
+      publico: "Público amplo de canções pop fáceis de cantar.",
+      potencial: "Faixa complementar em playlists e shows.",
+      lyrics: `Tudo o que eu quero é sentir o teu amor
+Sentir o teu abraço e esquecer a dor...`
+    },
+    {
+      id: "voce-se-lembra",
+      title: "Você Se Lembra",
+      score: "8.6",
+      artistRef: "Armandinho / Chimarruts",
+      theme: "Memórias doces de um romance de verão",
+      quote: `"Você se lembra daquele fim de tarde na praia?"`,
+      ideal: "Pop praiano / Luau acústico",
+      status: "Média (Nicho Verão)",
+      curiosidades: "Criada na linha despretensiosa do reggae acústico e pop praiano nacional.",
+      pontosFortes: "Levada descontraída com violão e sensação de pôr do sol na praia.",
+      mixagem: "Mix leve com destaque para a percussão de luau e violão acústico.",
+      instrumentos: "Violão de nylon, cajón/percussão praiana e baixo leve.",
+      potenciaVocal: "Canto descontraído, solto e sem grandes exigências técnicas.",
+      sentimento: "Nostalgia doce, sol, praia e romance despretensioso.",
+      publico: "Jovens apreciadores de pop praiano, luau e música de viagem de férias.",
+      potencial: "Bares de praia, playlists de luau/verão e churrascos com amigos.",
+      lyrics: `Você se lembra daquele fim de tarde na praia?
+O vento soprando na sua saia...`
+    }
+  ];
+
+  const tbody = document.getElementById('catalogTbody');
+  const STORAGE_FAVS = 'djmike_favorite_tracks';
+  const STORAGE_LYRICS = 'djmike_custom_lyrics';
+
+  let favorites = JSON.parse(localStorage.getItem(STORAGE_FAVS) || '[]');
+  let customLyrics = JSON.parse(localStorage.getItem(STORAGE_LYRICS) || '{}');
+  let onlyFavsActive = false;
+
+  function renderTable() {
+    tbody.innerHTML = '';
+    TRACKS_DATA.forEach((track, index) => {
+      const rankNum = index + 1;
+      const rankClass = rankNum <= 3 ? 'rank-col top-3' : 'rank-col';
+      const isFav = favorites.includes(track.id);
+      const scoreBadgeClass = track.top ? 'score-badge top-1' : 'score-badge';
+      const audioFileName = `${track.title.trim()}.m4a`; // Suporta .m4a e .mp3
+      const currentLyric = customLyrics[track.id] || track.lyrics || "";
+
+      const trTrack = document.createElement('tr');
+      trTrack.className = 'track-row';
+      trTrack.setAttribute('data-id', track.id);
+      trTrack.setAttribute('data-title', track.title);
+      trTrack.setAttribute('data-audio', audioFileName);
+
+      trTrack.innerHTML = `
+        <td class="${rankClass}">#${rankNum}</td>
+        <td style="text-align: center;"><button class="heart-btn ${isFav ? 'is-fav' : ''}" title="Favoritar">${isFav ? '❤️' : '🤍'}</button></td>
+        <td><button class="play-btn">▶ Tocar</button></td>
+        <td class="track-title">${track.title} <span class="expand-indicator">▼</span></td>
+        <td><span class="${scoreBadgeClass}">${track.score}</span></td>
+        <td class="artist-reference"><span class="artist-tag">${track.artistRef}</span></td>
+        <td>${track.theme}</td>
+        <td class="quote-text">${track.quote}</td>
+        <td>${track.ideal}</td>
+        <td><span class="badge-status">${track.status}</span></td>
+      `;
+
+      const trAccordion = document.createElement('tr');
+      trAccordion.className = 'accordion-row';
+      trAccordion.setAttribute('data-for', track.id);
+      trAccordion.innerHTML = `
+        <td colspan="10">
+          <div class="accordion-content">
+            <div class="detail-box"><div class="detail-label">💡 Curiosidades</div><div class="detail-value">${track.curiosidades}</div></div>
+            <div class="detail-box"><div class="detail-label">🌟 Pontos Fortes</div><div class="detail-value">${track.pontosFortes}</div></div>
+            <div class="detail-box"><div class="detail-label">🎛️ Mixagem & Produção</div><div class="detail-value">${track.mixagem}</div></div>
+            <div class="detail-box"><div class="detail-label">🎸 Instrumentos</div><div class="detail-value">${track.instrumentos}</div></div>
+            <div class="detail-box"><div class="detail-label">🎙️ Potência Vocal</div><div class="detail-value">${track.potenciaVocal}</div></div>
+            <div class="detail-box"><div class="detail-label">💖 Sentimento</div><div class="detail-value">${track.sentimento}</div></div>
+            <div class="detail-box"><div class="detail-label">🎯 Público-Alvo</div><div class="detail-value">${track.publico}</div></div>
+            <div class="detail-box"><div class="detail-label">🚀 Potencial Onde Tocar</div><div class="detail-value">${track.potencial}</div></div>
+            
+            <div class="detail-box lyrics-box">
+              <div class="lyrics-header">
+                <div class="detail-label" style="margin: 0;">📜 Letra da Canção (Edite à vontade)</div>
+                <button class="save-lyrics-btn" data-track="${track.id}">💾 Salvar Alterações</button>
+              </div>
+              <textarea class="lyrics-textarea" data-track="${track.id}" placeholder="Cole ou digite a letra completa aqui...">${currentLyric}</textarea>
+            </div>
+          </div>
+        </td>
+      `;
+
+      tbody.appendChild(trTrack);
+      tbody.appendChild(trAccordion);
+    });
+  }
+
+  renderTable();
+
+  const globalAudio = new Audio();
+  let currentPlayingRow = null;
+
+  function handleAudioPlay(row, audioSrc, playBtn) {
+    if (currentPlayingRow === row) {
+      if (globalAudio.paused) {
+        globalAudio.play();
+        playBtn.innerText = '⏸ Pausar';
+        playBtn.classList.add('playing');
+        row.classList.add('is-playing');
+      } else {
+        globalAudio.pause();
+        playBtn.innerText = '▶ Tocar';
+        playBtn.classList.remove('playing');
+        row.classList.remove('is-playing');
+      }
+      return;
+    }
+
+    if (currentPlayingRow) {
+      const prevBtn = currentPlayingRow.querySelector('.play-btn');
+      if (prevBtn) {
+        prevBtn.innerText = '▶ Tocar';
+        prevBtn.classList.remove('playing');
+      }
+      currentPlayingRow.classList.remove('is-playing');
+    }
+
+    currentPlayingRow = row;
+    globalAudio.src = audioSrc;
+    globalAudio.play().then(() => {
+      playBtn.innerText = '⏸ Pausar';
+      playBtn.classList.add('playing');
+      row.classList.add('is-playing');
+    }).catch(err => {
+      console.warn('Tentando formato alternativo (.mp3)...');
+      // Fallback automático para .mp3 se .m4a falhar
+      const mp3Fallback = audioSrc.replace('.m4a', '.mp3');
+      globalAudio.src = mp3Fallback;
+      globalAudio.play().then(() => {
+        playBtn.innerText = '⏸ Pausar';
+        playBtn.classList.add('playing');
+        row.classList.add('is-playing');
+      }).catch(err2 => {
+        alert('Arquivo de áudio não encontrado na pasta.\nVerifique se o arquivo está nomeado exatamente como: ' + audioSrc);
+        playBtn.innerText = '▶ Tocar';
+        playBtn.classList.remove('playing');
+        row.classList.remove('is-playing');
+        currentPlayingRow = null;
+      });
+    });
+  }
+
+  globalAudio.addEventListener('ended', () => {
+    if (currentPlayingRow) {
+      const btn = currentPlayingRow.querySelector('.play-btn');
+      if (btn) {
+        btn.innerText = '▶ Tocar';
+        btn.classList.remove('playing');
+      }
+      currentPlayingRow.classList.remove('is-playing');
+      currentPlayingRow = null;
+    }
+  });
+
+  tbody.addEventListener('click', (e) => {
+    const saveBtn = e.target.closest('.save-lyrics-btn');
+    if (saveBtn) {
+      const trackId = saveBtn.getAttribute('data-track');
+      const textarea = tbody.querySelector(`textarea[data-track="${trackId}"]`);
+      if (textarea) {
+        customLyrics[trackId] = textarea.value;
+        localStorage.setItem(STORAGE_LYRICS, JSON.stringify(customLyrics));
+        saveBtn.innerText = '✓ Salvo!';
+        saveBtn.classList.add('saved');
+        setTimeout(() => {
+          saveBtn.innerText = '💾 Salvar Alterações';
+          saveBtn.classList.remove('saved');
+        }, 1800);
+      }
+      return;
+    }
+
+    if (e.target.closest('.lyrics-textarea')) {
+      return;
+    }
+
+    const heartBtn = e.target.closest('.heart-btn');
+    const playBtn = e.target.closest('.play-btn');
+    const trackRow = e.target.closest('tr.track-row');
+    if (!trackRow) return;
+
+    const trackId = trackRow.getAttribute('data-id');
+    const audioSrc = trackRow.getAttribute('data-audio');
+    const accordionRow = tbody.querySelector(`tr.accordion-row[data-for="${trackId}"]`);
+
+    if (heartBtn) {
+      if (favorites.includes(trackId)) {
+        favorites = favorites.filter(id => id !== trackId);
+        heartBtn.innerText = '🤍';
+        heartBtn.classList.remove('is-fav');
+      } else {
+        favorites.push(trackId);
+        heartBtn.innerText = '❤️';
+        heartBtn.classList.add('is-fav');
+      }
+      localStorage.setItem(STORAGE_FAVS, JSON.stringify(favorites));
+      filterRows();
+      return;
+    }
+
+    if (playBtn) {
+      handleAudioPlay(trackRow, audioSrc, playBtn);
+      return;
+    }
+
+    if (accordionRow) {
+      const isOpen = accordionRow.classList.contains('open');
+
+      tbody.querySelectorAll('tr.accordion-row.open').forEach(r => {
+        if (r !== accordionRow) {
+          r.classList.remove('open');
+          const parentId = r.getAttribute('data-for');
+          const parentRow = tbody.querySelector(`tr.track-row[data-id="${parentId}"]`);
+          if (parentRow) parentRow.classList.remove('is-expanded');
+        }
+      });
+
+      if (isOpen) {
+        accordionRow.classList.remove('open');
+        trackRow.classList.remove('is-expanded');
+      } else {
+        accordionRow.classList.add('open');
+        trackRow.classList.add('is-expanded');
+      }
+    }
+  });
+
+  const searchInput = document.getElementById('searchInput');
+  const toggleFavFilter = document.getElementById('toggleFavFilter');
+
+  function filterRows() {
+    const filter = searchInput.value.toLowerCase();
+    const trackRows = tbody.querySelectorAll('tr.track-row');
+
+    trackRows.forEach(row => {
+      const trackId = row.getAttribute('data-id');
+      const accRow = tbody.querySelector(`tr.accordion-row[data-for="${trackId}"]`);
+      const matchesSearch = row.innerText.toLowerCase().includes(filter);
+      const matchesFav = !onlyFavsActive || favorites.includes(trackId);
+
+      if (matchesSearch && matchesFav) {
+        row.style.display = '';
+        if (accRow && row.classList.contains('is-expanded')) {
+          accRow.style.display = 'table-row';
+        }
+      } else {
+        row.style.display = 'none';
+        if (accRow) accRow.style.display = 'none';
+      }
+    });
+  }
+
+  searchInput.addEventListener('input', filterRows);
+
+  toggleFavFilter.addEventListener('click', () => {
+    onlyFavsActive = !onlyFavsActive;
+    toggleFavFilter.classList.toggle('active', onlyFavsActive);
+    toggleFavFilter.innerText = onlyFavsActive ? '❤️ Mostrando Favoritas' : '❤️ Ver Apenas Favoritas';
+    filterRows();
+  });
+
+  const headers = document.querySelectorAll('th[data-type]');
+  headers.forEach((header) => {
+    header.addEventListener('click', () => {
+      const colIndex = Array.from(header.parentElement.children).indexOf(header);
+      const isAsc = header.classList.contains('sorted-asc');
+      const type = header.getAttribute('data-type');
+
+      headers.forEach(h => h.classList.remove('sorted-asc', 'sorted-desc'));
+      header.classList.toggle('sorted-asc', !isAsc);
+      header.classList.toggle('sorted-desc', isAsc);
+
+      const trackRows = Array.from(tbody.querySelectorAll('tr.track-row'));
+
+      trackRows.sort((rowA, rowB) => {
+        if (type === 'fav') {
+          const idA = rowA.getAttribute('data-id');
+          const idB = rowB.getAttribute('data-id');
+          const favA = favorites.includes(idA) ? 1 : 0;
+          const favB = favorites.includes(idB) ? 1 : 0;
+          return isAsc ? favA - favB : favB - favA;
+        }
+
+        let cellA = rowA.children[colIndex].innerText.replace('#', '').trim();
+        let cellB = rowB.children[colIndex].innerText.replace('#', '').trim();
+
+        if (type === 'number') {
+          return isAsc
+            ? parseFloat(cellA) - parseFloat(cellB)
+            : parseFloat(cellB) - parseFloat(cellA);
+        }
+
+        return isAsc
+          ? cellA.localeCompare(cellB, 'pt-BR')
+          : cellB.localeCompare(cellA, 'pt-BR');
+      });
+
+      trackRows.forEach(row => {
+        const id = row.getAttribute('data-id');
+        const accRow = tbody.querySelector(`tr.accordion-row[data-for="${id}"]`);
+        tbody.appendChild(row);
+        if (accRow) tbody.appendChild(accRow);
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
